@@ -80,7 +80,7 @@ std::string create_file_name() {
     std::stringstream ss;
     ss << tilingStr;
     ss << "-T" << T << "N" << N;
-    ss << "-t" << tau;
+    ss << "-a" << tau;
     ss << "-s" << Tstart << "e" << Tend;
     ss << "-p" << grid_spacing 
        << "c" << cell_spacing << "r" << cell_radius << "l" << label;
@@ -111,7 +111,7 @@ void initParams(CmdParams * cmdparams)
             "number of time steps",
             1, 30, 4);
 
-    CmdParams_describeNumParam(cmdparams,"tau", 't', 1,
+    CmdParams_describeNumParam(cmdparams,"tau", 'a', 1,
             "tile size for diamond tiles (tau)",
             3, 30, 15);
 

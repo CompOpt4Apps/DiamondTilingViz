@@ -334,8 +334,10 @@ int main(int argc, char ** argv) {
     ofstream file(filename.c_str());
         
     // Specify file and height and width.
-    SVGPrinter svg(file, cell_spacing*(N+1) + ((Tend-Tstart+1)-1)*grid_spacing,
-                         (N+1)*cell_spacing);
+    // FIXME: This is N+3 because of the spatial dimension starting at 1, not 0,
+    // and CellFieldArray is now starting at N+2, so this has to start at N+3... 
+    SVGPrinter svg(file, cell_spacing*(N+3) + ((Tend-Tstart+1)-1)*grid_spacing,
+                         (N+3)*cell_spacing);
     svg.printHeader();
     
     // Declare the array of iteration spaces.
@@ -344,7 +346,7 @@ int main(int argc, char ** argv) {
     // FIXME: the N+1 is so we can start our spatial dimensions at 1.
     // The CellFieldArray handles the fact that T starts at 1, but not
     // that N starts at 1.
-    CellFieldArray slices(T,N+1,N+1,grid_spacing,Tstart,Tend);
+    CellFieldArray slices(T,N+2,N+2,grid_spacing,Tstart,Tend);
 
     // Have the particular tiling type mark iterations
     // in each tile.

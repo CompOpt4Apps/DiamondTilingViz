@@ -19,6 +19,14 @@ void SVGPrinter::printFooter() {
    mOut << "</svg>" << endl;
 }
 
+void SVGPrinter::printText(int x, int y, string text) {
+    mOut << "<text x=\"" << x << "\" y=\"" << y
+         << "\" alignment-baseline=\"central\" "
+         << "text-anchor=\"middle\">" << endl;
+    mOut << text << endl;
+    mOut << "</text>" << endl;
+}
+
 void SVGPrinter::printCircle(int x, int y, int r, string stroke, string fill) {
     mOut << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\" "
          << "stroke=\"" << stroke << "\" fill=\"" << fill << "\" />" << endl;
@@ -29,6 +37,15 @@ void SVGPrinter::printCenteredText(int x, int y, string text) {
          << "\" alignment-baseline=\"central\" "
          << "text-anchor=\"middle\">" << endl;
     mOut << text << endl;
+    mOut << "</text>" << endl;
+}
+
+void SVGPrinter::printUnderCenteredText(int x, int y, string text) {
+    mOut << "<text x=\"" << x << "\" y=\"" << y
+         << "\" alignment-baseline=\"central\" "
+         << "text-anchor=\"middle\">" << endl;
+    mOut << "<tspan x=\"" << x << "\" dy=\"1.2em\">"
+         << text << "</tspan>" << endl;
     mOut << "</text>" << endl;
 }
 

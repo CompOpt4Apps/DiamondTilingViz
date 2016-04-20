@@ -30,11 +30,17 @@ void CellFieldArray::printToSVG(SVGPrinter& svg_printer, int Tstart, int Tend) {
     }
 }
 
-void CellFieldArray::setLabel(int t, int x, int y, string label) {
-    assert(t>=1 && t<mNumFields);
-    mArray[t-1]->setLabel(x,y,label);
+void CellFieldArray::setLabel1(int t, int x, int y, string label) {
+   // printf("t: %d\nmnumfields: %d", t, mNumFields);
+    assert(t>=1 && t<=mNumFields);
+    mArray[t-1]->setLabel1(x,y,label);
 }
 
+void CellFieldArray::setLabel2(int t, int x, int y, string label) {
+   // printf("t: %d\nmnumfields: %d", t, mNumFields);
+    assert(t>=1 && t<=mNumFields);
+    mArray[t-1]->setLabel2(x,y,label);
+}
 void CellFieldArray::setStroke(int t, int x, int y, string stroke) {
     mArray[t-1]->setStroke(x,y,stroke);
 }
@@ -47,8 +53,8 @@ void CellFieldArray::setBox(int t, int x1, int y1, int x2, int y2) {
     mArray[t-1]->setBox(x1,y1,x2,y2);
 }
 
-string CellFieldArray::getLabel(int t, int x, int y) {
-    return mArray[t-1]->getLabel(x,y);
+string CellFieldArray::getLabel1(int t, int x, int y) {
+    return mArray[t-1]->getLabel1(x,y);
 }
 
 string CellFieldArray::getStroke(int t, int x, int y) {

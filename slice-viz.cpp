@@ -195,6 +195,16 @@ std::string tileCoordToString(int c1, int c2, int c3) {
     return ss.str();
 }
 
+// converts the spatial coords to a string
+std::string spatialCoordToString(int i, int j) {
+
+    std::stringstream ss;
+
+    ss << i << "," << j;
+
+    return ss.str();
+}
+
 // Array of colors.
 std::string svgColors[] = 
 //{"bisque","red","aqua","yellow","blue","green","fuchsia","lime","silver","coral","lavender","pink","powderblue","plum","palegreen"};
@@ -251,10 +261,11 @@ std::string tileCoordToColor(int c1, int c2, int c3) {
 
 int c1, c2, c3, c4, c5, c6, c7, c8;
 
+
 // The calc_ping and calc_pong macros are capturing the slices,
 // c1, c2, and c3 variables.
 #define calc_ping(t,i,j) { \
-    if (label) slices.setLabel(t,i,j,tileCoordToString(c1,c2,c3)); \
+    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c3)); \
     if (debug) { \
       cout << "c1,c2,c3 = " << c1 << ", " << c2 << ", " << c3 << "    "; \
       cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
@@ -263,7 +274,7 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
       slices.setFill(t,i,j,tileCoordToColor(c1,c2,c3)); } }
     
 #define calc_pong(t,i,j) { \
-    if (label) slices.setLabel(t,i,j,tileCoordToString(c1,c2,c3)); \
+    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c3)); \
     if (debug) { \
       cout << "c1,c2,c3 = " << c1 << ", " << c2 << ", " << c3 << "    "; \
       cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
@@ -273,7 +284,7 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
 
 // Used for debugging problem with diamond prizms.
 #define calc(t,i,j) { \
-    if (label) slices.setLabel(t,i,j,tileCoordToString(c1,c2,c2)); \
+    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c2)); \
     if (debug) { \
       cout << "c1,c2 = " << c1 << ", " << c2 << "    "; \
       cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
@@ -281,9 +292,13 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
     if (!one_tile || (c1==one_tile_c1 && c2==one_tile_c2)) {\
       slices.setFill(t,i,j,tileCoordToColor(c1,c2,c2)); } }
 
+ // if (label) slices.setLabel(t,i,j,tileCoordToString(kt,k1,k2)); \
 // Taking the ping and pong out of diamonds.
 #define calc_diamond(kt,k1,k2,t,i,j) { \
-    if (label) slices.setLabel(t,i,j,tileCoordToString(kt,k1,k2)); \
+    if (label && (gridspacingChoice!=halfradius || Tend == t)) { \
+        slices.setLabel1(t,i,j,tileCoordToString(kt,k1,k2)); \
+        slices.setLabel2(t,i,j,spatialCoordToString(i,j)); \
+    } \
     if (debug) { \
       cout << "kt,k1,k2 = " << kt << ", " << k1 << ", " << k2 << "    "; \
       cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
@@ -291,7 +306,6 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
     if (!one_tile || (kt==one_tile_c1 && k1==one_tile_c2 && k2==one_tile_c3)) {\
       slices.setFill(t,i,j,tileCoordToColor(kt,k1,k2)); } }
     
-
 
 int main(int argc, char ** argv) {
     // Do command-line parsing.
@@ -403,7 +417,6 @@ int main(int argc, char ** argv) {
         case diamond_prizms_6x6_noping:
             #include "diamond-prizms-skew-noping-6x6.is"
             break;
-
         default:
             std::cerr << "ERROR: slice-viz: unknown tiling type" << std::endl;
     }  

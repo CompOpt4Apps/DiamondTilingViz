@@ -205,7 +205,7 @@ int c0, c1, c2, c3, c4, c5, c6, c7, c8;
 // Capturing the c0, c1, and c2 variables in the generated code, which
 // should be the tile coordinates.
 #define computation(t,i,j) { \
-    if (label) slices.setLabel(t,i,j,tileCoordToString(c0,c1,c2)); \
+    if (label) slices.setLabel1(t,i,j,tileCoordToString(c0,c1,c2)); \
     if (debug) { \
       cout << "c0,c1,c2 = " << c0 << ", " << c1 << ", " << c2 << "    "; \
       cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \

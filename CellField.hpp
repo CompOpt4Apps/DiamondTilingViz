@@ -37,13 +37,15 @@ class CellField {
     void printToSVG(SVGPrinter& svg_printer);
 
     // Modifiers
-    void setLabel(int x, int y, string label);
+    void setLabel1(int x, int y, string label);
+    void setLabel2(int x, int y, string label);
     void setStroke(int x, int y, string stroke);
     void setFill(int x, int y, string fill);
     void setBox(int x1, int y1, int x2, int y2);
 
     // Accessors
-    string getLabel(int x, int y);
+    string getLabel1(int x, int y);
+    string getLabel2(int x, int y);
     string getStroke(int x, int y);
     string getFill(int x, int y);
 
@@ -55,7 +57,8 @@ class CellField {
   private:
     int mXStart, mYStart;
     int mWidth; int mHeight;
-    string **mLabel;
+    string **mLabel1;
+    string **mLabel2;
     string **mStroke;
     string **mFill;
 

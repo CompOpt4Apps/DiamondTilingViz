@@ -13,19 +13,22 @@ CellField::CellField(int x_start, int y_start, int width, int height) {
     mWidth = width;
     mHeight = height;
 
-    mLabel = new string*[mHeight];
+    mLabel1 = new string*[mHeight];
+    mLabel2 = new string*[mHeight];
     mStroke = new string*[mHeight];
     mFill = new string*[mHeight];
 
     for(int i = 0; i < mHeight; i++) {
-        mLabel[i] = new string[mWidth];
+        mLabel1[i] = new string[mWidth];
+        mLabel2[i] = new string[mWidth];
         mStroke[i] = new string[mWidth];
         mFill[i] = new string[mWidth];
 
         for(int j = 0; j < mWidth; j++) {
             mStroke[i][j] = "black";
             mFill[i][j] = "white";
-            mLabel[i][j]="";
+            mLabel1[i][j]="";
+            mLabel2[i][j]="";
         }
     }
 
@@ -58,16 +61,25 @@ void CellField::printToSVG(SVGPrinter& svg_printer) {
                 mXStart+x, mYStart+y, sRadius, mStroke[j][i], mFill[j][i]);
                 
             svg_printer.printCenteredText(
-                mXStart+x, mYStart+y, mLabel[j][i]);
+                mXStart+x, mYStart+y, mLabel1[j][i]);
+            svg_printer.printUnderCenteredText(
+                mXStart+x, mYStart+y, mLabel2[j][i]);
         }
     }
 }
 
-void CellField::setLabel(int x, int y, string label) {
+void CellField::setLabel1(int x, int y, string label) {
     assert(x>=0 && x<mWidth);
     assert(y>=0 && y<mHeight);
-    mLabel[x][y] = label;
+    mLabel1[x][y] = label;
 }
+
+void CellField::setLabel2(int x, int y, string label) {
+    assert(x>=0 && x<mWidth);
+    assert(y>=0 && y<mHeight);
+    mLabel2[x][y] = label;
+}
+
 
 void CellField::setStroke(int x, int y, string stroke) {
     assert(x>=0 && x<mWidth);
@@ -85,10 +97,16 @@ void CellField::setBox(int x1, int y1, int x2, int y2) {
     mBoxX1 = x1; mBoxY1 = y1; mBoxX2 = x2; mBoxY2 = y2;
 }
 
-string CellField::getLabel(int x, int y) {
+string CellField::getLabel1(int x, int y) {
     assert(x>=0 && x<mWidth);
     assert(y>=0 && y<mHeight);
-   return(mLabel[x][y]);
+   return(mLabel1[x][y]);
+}
+
+string CellField::getLabel2(int x, int y) {
+    assert(x>=0 && x<mWidth);
+    assert(y>=0 && y<mHeight);
+   return(mLabel2[x][y]);
 }
 
 string CellField::getStroke(int x, int y) {

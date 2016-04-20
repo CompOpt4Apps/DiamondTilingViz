@@ -18,8 +18,10 @@ class SVGPrinter {
 
     void printHeader();
     void printFooter();
+    void printText(int x, int y, string text);
     void printCircle(int x, int y, int r, string stroke, string fill);
     void printCenteredText(int x, int y, string text);
+    void printUnderCenteredText(int x, int y, string text);
     void printRectangle(int x, int y, int w, int h, string stroke, string fill);
 
   private:

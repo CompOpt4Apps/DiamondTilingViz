@@ -40,13 +40,14 @@ class CellFieldArray {
     void printToSVG(SVGPrinter& svg_printer, int Tstart, int Tend);
 
     // Modifiers
-    void setLabel(int t, int x, int y, string label);
+    void setLabel1(int t, int x, int y, string label);
+    void setLabel2(int t, int x, int y, string label);
     void setStroke(int t, int x, int y, string stroke);
     void setFill(int t, int x, int y, string fill);
     void setBox(int t, int x1, int y1, int x2, int y2);
 
     // Accessors
-    string getLabel(int t, int x, int y);
+    string getLabel1(int t, int x, int y);
     string getStroke(int t, int x, int y);
     string getFill(int t, int x, int y);
 

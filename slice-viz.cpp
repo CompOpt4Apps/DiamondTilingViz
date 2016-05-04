@@ -20,6 +20,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <map>
 
 #include "intops.h"
 
@@ -40,6 +41,7 @@ bool one_tile = false;
 int one_tile_c1 = 1;
 int one_tile_c2 = 1;
 int one_tile_c3 = -1;
+std::map<int, std::map<int, std::map<int, int> > > colors; // NEW COLOR
 
 typedef enum {
     pipelined_4x4x4,
@@ -176,7 +178,6 @@ void initParams(CmdParams * cmdparams)
 
 // converts the tile coordinates to a string
 std::string tileCoordToString(int c1, int c2, int c3) {
-
     std::stringstream ss;
 
     switch (tilingChoice) {
@@ -208,23 +209,47 @@ std::string spatialCoordToString(int i, int j) {
 // Array of colors.
 std::string svgColors[] = 
 //{"bisque","red","aqua","yellow","blue","green","fuchsia","lime","silver","coral","lavender","pink","powderblue","plum","palegreen"};
-{"red","yellow","green","lime","aqua","blue","fuchsia","silver","bisque","coral","lavender","pink","powderblue","plum","palegreen","teal","navy"};
+{"red","lavender","yellow","green","lime","aqua","purple","coral","pink","powderblue","plum","palegreen","fuchsia","teal","navy"};
 //{"maroon","red","olive","yellow","green","lime","teal","aqua","navy","blue","purple","fuchsia","black","grey","silver","white"};
 //{"yellow","green","aqua","navy","red","teal","fuchsia","lime","maroon","silver","olive","blue","black","purple","gray","white"};
-int num_colors = 17;
+int num_colors = 15;
 
 // converts the tile coordinates to a string
+// otherColor(list) - return color from svgColors NOT in given list
+// Dictionary of strings -> colors "(coordinates)" -> "color"
+
 std::string tileCoordToColor(int c1, int c2, int c3) {
-    static int count = -1;
-    static int last_c1 = -99;
-    static int last_c2 = -99;
-    static int last_c3 = -99;
+    colors[c1][c2][c3] = colors[c1-1][c2-1][c3-1]+1;
+    if (colors[c1][c2][c3] >= num_colors) {
+        colors[c1][c2][c3] = 0;
+    }
+    // check adjacent coordinates
+    while (colors[c1][c2][c3]==colors[c1-1][c2][c3] ||
+        colors[c1][c2][c3]==colors[c1][c2-1][c3] ||
+        colors[c1][c2][c3]==colors[c1][c2][c3-1] ||
+        colors[c1][c2][c3]==colors[c1-1][c2-1][c3+1] ||
+        colors[c1][c2][c3]==colors[c1-1][c2-1][c3] ||
+        colors[c1][c2][c3]==colors[c1-1][c2][c3-1] ||
+        colors[c1][c2][c3]==colors[c1-2][c2-1][c3] ||
+        colors[c1][c2][c3]==colors[c1-2][c2-1][c3-1] ||
+        colors[c1][c2][c3]==colors[c1+1][c2-1][c3-1] ||
+        colors[c1][c2][c3]==colors[c1+2][c2+1][c3+1] ||
+        colors[c1][c2][c3]==colors[c1-2][c2][c3-1] ||
+        colors[c1][c2][c3]==colors[c1-2][c2+1][c3] ||
+        colors[c1][c2][c3]==colors[c1][c2-1][c3+1] ||
+        colors[c1][c2][c3]==colors[c1][c2-1][c3-1] ||
+        colors[c1][c2][c3]==colors[c1+1][c2+1][c3]) {
+        (colors[c1][c2][c3])++;
+    }
+
 
     // We want to change the tile color if the tile coordinate
     // has changed.
+    /*
 
+    // Check that tiles aren't 
     switch (tilingChoice) {
-    
+
         // Diamond prizms only have 2 dimensions of tiling.
         case diamond_prizms_6x6:
         case diamond_prizms_8x8:
@@ -245,8 +270,9 @@ std::string tileCoordToColor(int c1, int c2, int c3) {
             }
             break;
     }
+    */
     
-    return svgColors[ count % num_colors ];
+    return svgColors[ colors[c1][c2][c3] ];
 }
 
 // Definitions and declarations needed for diamonds-tij-skew.is

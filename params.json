@@ -1,0 +1,6 @@
+{
+  "name": "Diamondtilingviz",
+  "tagline": "Various approaches to visualizing 3D diamond tilings with SVG files.",
+  "body": "### Diamond Tiling Visualizer\r\nDiamond tiling is a way to schedule stencil computations on multicore\r\narchitectures that balances parallelism and data locality.\r\nThe Diamond Tiling Visualizer is a tool for visualizing 3D diamond tiles using\r\na 2.5D visualization.\r\n\r\nThe slice-viz executable generates an SVG file containing the visualization.\r\nThere are a number of parameters that can be set to modify the parallelization.\r\nThe tile size is parameterized as was described in the ICS 2015 paper\r\n\"Parameterized Diamond Tiling for Stencil Computations with Chapel parallel iterators\"\r\nby Ian J. Bertolacci, Catherine Olschanowsky, Ben Harshbarger, Bradford L. Chamberlain,\r\nDavid G. Wonnacott, and Michelle Mills Strout.\r\n\r\n### Getting Started\r\n\r\nTo build the visualizer:\r\n    make\r\n\r\nExample usage:\r\n\r\n    ./slice-viz -h\r\n\r\n    ./slice-viz\r\n\r\n    ./slice-viz -T 10 -s 2 -e 4 -g halfradius\r\n    \r\n### Authors and Contributors\r\n\r\nMichelle Strout (@mstrout) and Wendy Wang (@aMiss-aWry).\r\n\r\nIf you have any questions or comments send email to mstrout@cs.arizona.edu.\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}

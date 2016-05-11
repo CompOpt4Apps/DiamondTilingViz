@@ -214,10 +214,6 @@ std::string svgColors[] =
 //{"yellow","green","aqua","navy","red","teal","fuchsia","lime","maroon","silver","olive","blue","black","purple","gray","white"};
 int num_colors = 15;
 
-// converts the tile coordinates to a string
-// otherColor(list) - return color from svgColors NOT in given list
-// Dictionary of strings -> colors "(coordinates)" -> "color"
-
 std::string tileCoordToColor(int c1, int c2, int c3) {
     colors[c1][c2][c3] = colors[c1-1][c2-1][c3-1]+1;
     if (colors[c1][c2][c3] >= num_colors) {
@@ -241,36 +237,6 @@ std::string tileCoordToColor(int c1, int c2, int c3) {
         colors[c1][c2][c3]==colors[c1+1][c2+1][c3]) {
         (colors[c1][c2][c3])++;
     }
-
-
-    // We want to change the tile color if the tile coordinate
-    // has changed.
-    /*
-
-    // Check that tiles aren't 
-    switch (tilingChoice) {
-
-        // Diamond prizms only have 2 dimensions of tiling.
-        case diamond_prizms_6x6:
-        case diamond_prizms_8x8:
-        case diamond_prizms_12x12:
-            if (c1!=last_c1 || c2!=last_c2) {
-                last_c1 = c1;
-                last_c2 = c2;
-                last_c3 = c3;
-                count += color_incr;
-            }
-            break;
-        default:
-            if (c1!=last_c1 || c2!=last_c2 || c3!=last_c3) {
-                last_c1 = c1;
-                last_c2 = c2;
-                last_c3 = c3;
-                count += color_incr;
-            }
-            break;
-    }
-    */
     
     return svgColors[ colors[c1][c2][c3] ];
 }
@@ -332,7 +298,6 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
     if (!one_tile || (kt==one_tile_c1 && k1==one_tile_c2 && k2==one_tile_c3)) {\
       slices.setFill(t,i,j,tileCoordToColor(kt,k1,k2)); } }
     
-
 int main(int argc, char ** argv) {
     // Do command-line parsing.
     CmdParams *cmdparams = CmdParams_ctor(1);
@@ -361,7 +326,7 @@ int main(int argc, char ** argv) {
     if (grid_spacing<0) {
         switch (gridspacingChoice) {
             case normal:
-                grid_spacing = cell_spacing*(N+1);
+                grid_spacing = cell_spacing*(N+2);
                 break;
             case halfradius:
                 grid_spacing = 0.5*(double)cell_radius;
@@ -383,15 +348,12 @@ int main(int argc, char ** argv) {
     // Declare the array of iteration spaces.
     CellField::sSpacing = cell_spacing;
     CellField::sRadius = cell_radius;
-    // FIXME: the N+1 is so we can start our spatial dimensions at 1.
-    // The CellFieldArray handles the fact that T starts at 1, but not
-    // that N starts at 1.
+    // N+2 so our spatial dimensions begin accurately
     CellFieldArray slices(T,N+2,N+2,grid_spacing,Tstart,Tend);
 
     // Have the particular tiling type mark iterations
     // in each tile.
     switch (tilingChoice) {
-    
         case pipelined_4x4x4:
             #include "pipelined-4x4x4.is"
             break;

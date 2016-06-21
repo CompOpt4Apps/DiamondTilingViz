@@ -22,6 +22,8 @@
 #include <iostream>
 #include <map>
 
+// min, max, ceil, etc. definitions
+#include "eassert.h"
 #include "intops.h"
 
 //==============================================
@@ -43,31 +45,11 @@ int one_tile_c2 = 1;
 int one_tile_c3 = -1;
 std::map<int, std::map<int, std::map<int, int> > > colors; // NEW COLOR
 
-/*
-typedef enum {
-    pipelined_4x4x4,
-    diamonds,
-    diamond_prizms_6x6,
-    diamond_prizms_8x8,
-    diamond_prizms_12x12,
-    diamond_prizms_6x6_noping
-} tiling_type;
-tiling_type tilingChoice = diamonds;
-char tilingStr[MAXPOSSVALSTRING];
-#define num_TPairs 6
-static EnumStringPair TPairs[] = {{pipelined_4x4x4,"pipelined_4x4x4"},
-                        {diamonds,"diamonds"},
-                        {diamond_prizms_6x6,"diamond_prizms_6x6"},
-                        {diamond_prizms_8x8,"diamond_prizms_8x8"},
-                        {diamond_prizms_12x12,"diamond_prizms_12x12"},
-                        {diamond_prizms_6x6_noping,"diamond_prizms_6x6_noping"}
-                };
-*/
 typedef enum {
     normal,
     halfradius,
 } gridspacing_type;
-gridspacing_type gridspacingChoice = normal;
+gridspacing_type gridspacingChoice = halfradius;
 char gridspacingStr[MAXPOSSVALSTRING];
 #define num_GPairs 2
 static EnumStringPair GPairs[] = {{normal,"normal"},
@@ -102,13 +84,8 @@ void initParams(CmdParams * cmdparams)
   Uses a CmdParams object to describe all of the command line
   parameters.
 
-  \author  Michelle Strout 9/21/13
 *//*--------------------------------------------------------------*/
 {
-
-//    CmdParams_describeEnumParam(cmdparams, "tiling", 't', 1,
-//            "specify the tiling to use",
-//            TPairs, num_TPairs, diamonds);
 
     CmdParams_describeNumParam(cmdparams,"numTimeSteps", 'T', 1,
             "number of time steps",
@@ -132,7 +109,7 @@ void initParams(CmdParams * cmdparams)
 
     CmdParams_describeEnumParam(cmdparams,"grid_spacing_approach", 'g', 1,
             "approach for spacing between top of slices", 
-            GPairs, num_GPairs, normal);
+            GPairs, num_GPairs, halfradius);
             
     CmdParams_describeNumParam(cmdparams,"grid_spacing", 'p', 1,
             "precise spacing between top of slices, "
@@ -180,31 +157,14 @@ void initParams(CmdParams * cmdparams)
 // converts the tile coordinates to a string
 std::string tileCoordToString(int c1, int c2, int c3) {
     std::stringstream ss;
-
-/*    switch (tilingChoice) {
-    
-        // Diamond prizms only have 2 dimensions of tiling.
-        case diamond_prizms_6x6:
-        case diamond_prizms_8x8:
-        case diamond_prizms_12x12:
-            ss << c1 << "," << c2;
-            break;
-        default:
-*/
-            ss << c1 << "," << c2 << "," << c3;
-//            break;
-//    }
-    
+    ss << c1 << "," << c2 << "," << c3;
     return ss.str();
 }
 
 // converts the spatial coords to a string
 std::string spatialCoordToString(int i, int j) {
-
     std::stringstream ss;
-
     ss << i << "," << j;
-
     return ss.str();
 }
 
@@ -243,49 +203,8 @@ std::string tileCoordToColor(int c1, int c2, int c3) {
     return svgColors[ colors[c1][c2][c3] ];
 }
 
-// Definitions and declarations needed for diamonds-tij-skew.is
-#include "eassert.h"
-#include "intops.h"
-//#define N 10
-//#define T T
-//#define do_edge_pong(i,j) // nothing
-//#define do_edge_ping(i,j) // nothing
-//#define do_init_pong(i,j) // nothing
-//#define startclock() // nothing
 
-int c1, c2, c3, c4, c5, c6, c7, c8;
-
-/*
-// The calc_ping and calc_pong macros are capturing the slices,
-// c1, c2, and c3 variables.
-#define calc_ping(t,i,j) { \
-    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c3)); \
-    if (debug) { \
-      cout << "c1,c2,c3 = " << c1 << ", " << c2 << ", " << c3 << "    "; \
-      cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
-    } \
-    if (!one_tile || (c1==one_tile_c1 && c2==one_tile_c2 && c3==one_tile_c3)) {\
-      slices.setFill(t,i,j,tileCoordToColor(c1,c2,c3)); } }
-    
-#define calc_pong(t,i,j) { \
-    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c3)); \
-    if (debug) { \
-      cout << "c1,c2,c3 = " << c1 << ", " << c2 << ", " << c3 << "    "; \
-      cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
-    } \
-    if (!one_tile || (c1==one_tile_c1 && c2==one_tile_c2 && c3==one_tile_c3)) {\
-      slices.setFill(t,i,j,tileCoordToColor(c1,c2,c3)); } }
-
-// Used for debugging problem with diamond prizms.
-#define calc(t,i,j) { \
-    if (label) slices.setLabel1(t,i,j,tileCoordToString(c1,c2,c2)); \
-    if (debug) { \
-      cout << "c1,c2 = " << c1 << ", " << c2 << "    "; \
-      cout << "t,i,j = " << t << ", " << i << ", " << j << std::endl; \
-    } \
-    if (!one_tile || (c1==one_tile_c1 && c2==one_tile_c2)) {\
-      slices.setFill(t,i,j,tileCoordToColor(c1,c2,c2)); } }
-*/
+// Loop body.
 // Generate SVG for each iteration point based on options.
 #define calc_diamond(kt,k1,k2,t,i,j) { \
     if (label && (gridspacingChoice!=halfradius || Tend == t)) { \
@@ -304,8 +223,6 @@ int main(int argc, char ** argv) {
     CmdParams *cmdparams = CmdParams_ctor(1);
     initParams(cmdparams);
     CmdParams_parseParams(cmdparams,argc,argv);
-    //tilingChoice = (tiling_type)CmdParams_getValue(cmdparams,'t');
-    //strncpy(tilingStr, CmdParams_getString(cmdparams,'t'), MAXPOSSVALSTRING);
     T = CmdParams_getValue(cmdparams,'T');
     Tstart = CmdParams_getValue(cmdparams,'s');
     Tend = CmdParams_getValue(cmdparams,'e');

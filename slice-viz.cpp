@@ -6,7 +6,7 @@
  *
  * \date Started: 9/21/13
  *
- * \authors Michelle Strout
+ * \authors Michelle Strout, Wendy Wang
  *
  * Copyright (c) 2016, University of Arizona.
  * Copyright (c) 2013, Colorado State University <br>
@@ -43,6 +43,7 @@ int one_tile_c2 = 1;
 int one_tile_c3 = -1;
 std::map<int, std::map<int, std::map<int, int> > > colors; // NEW COLOR
 
+/*
 typedef enum {
     pipelined_4x4x4,
     diamonds,
@@ -61,7 +62,7 @@ static EnumStringPair TPairs[] = {{pipelined_4x4x4,"pipelined_4x4x4"},
                         {diamond_prizms_12x12,"diamond_prizms_12x12"},
                         {diamond_prizms_6x6_noping,"diamond_prizms_6x6_noping"}
                 };
-
+*/
 typedef enum {
     normal,
     halfradius,
@@ -80,7 +81,7 @@ static EnumStringPair GPairs[] = {{normal,"normal"},
 // example: pipelined-3x3x3-T4N10-c60r20
 std::string create_file_name() {
     std::stringstream ss;
-    ss << tilingStr;
+    ss << "diamonds";
     ss << "-T" << T << "N" << N;
     ss << "-a" << tau;
     ss << "-s" << Tstart << "e" << Tend;
@@ -105,9 +106,9 @@ void initParams(CmdParams * cmdparams)
 *//*--------------------------------------------------------------*/
 {
 
-    CmdParams_describeEnumParam(cmdparams, "tiling", 't', 1,
-            "specify the tiling to use",
-            TPairs, num_TPairs, diamonds);
+//    CmdParams_describeEnumParam(cmdparams, "tiling", 't', 1,
+//            "specify the tiling to use",
+//            TPairs, num_TPairs, diamonds);
 
     CmdParams_describeNumParam(cmdparams,"numTimeSteps", 'T', 1,
             "number of time steps",
@@ -180,7 +181,7 @@ void initParams(CmdParams * cmdparams)
 std::string tileCoordToString(int c1, int c2, int c3) {
     std::stringstream ss;
 
-    switch (tilingChoice) {
+/*    switch (tilingChoice) {
     
         // Diamond prizms only have 2 dimensions of tiling.
         case diamond_prizms_6x6:
@@ -189,9 +190,10 @@ std::string tileCoordToString(int c1, int c2, int c3) {
             ss << c1 << "," << c2;
             break;
         default:
+*/
             ss << c1 << "," << c2 << "," << c3;
-            break;
-    }
+//            break;
+//    }
     
     return ss.str();
 }
@@ -246,14 +248,14 @@ std::string tileCoordToColor(int c1, int c2, int c3) {
 #include "intops.h"
 //#define N 10
 //#define T T
-#define do_edge_pong(i,j) // nothing
-#define do_edge_ping(i,j) // nothing
-#define do_init_pong(i,j) // nothing
-#define startclock() // nothing
+//#define do_edge_pong(i,j) // nothing
+//#define do_edge_ping(i,j) // nothing
+//#define do_init_pong(i,j) // nothing
+//#define startclock() // nothing
 
 int c1, c2, c3, c4, c5, c6, c7, c8;
 
-
+/*
 // The calc_ping and calc_pong macros are capturing the slices,
 // c1, c2, and c3 variables.
 #define calc_ping(t,i,j) { \
@@ -283,9 +285,8 @@ int c1, c2, c3, c4, c5, c6, c7, c8;
     } \
     if (!one_tile || (c1==one_tile_c1 && c2==one_tile_c2)) {\
       slices.setFill(t,i,j,tileCoordToColor(c1,c2,c2)); } }
-
- // if (label) slices.setLabel(t,i,j,tileCoordToString(kt,k1,k2)); \
-// Taking the ping and pong out of diamonds.
+*/
+// Generate SVG for each iteration point based on options.
 #define calc_diamond(kt,k1,k2,t,i,j) { \
     if (label && (gridspacingChoice!=halfradius || Tend == t)) { \
         slices.setLabel1(t,i,j,tileCoordToString(kt,k1,k2)); \
@@ -303,8 +304,8 @@ int main(int argc, char ** argv) {
     CmdParams *cmdparams = CmdParams_ctor(1);
     initParams(cmdparams);
     CmdParams_parseParams(cmdparams,argc,argv);
-    tilingChoice = (tiling_type)CmdParams_getValue(cmdparams,'t');
-    strncpy(tilingStr, CmdParams_getString(cmdparams,'t'), MAXPOSSVALSTRING);
+    //tilingChoice = (tiling_type)CmdParams_getValue(cmdparams,'t');
+    //strncpy(tilingStr, CmdParams_getString(cmdparams,'t'), MAXPOSSVALSTRING);
     T = CmdParams_getValue(cmdparams,'T');
     Tstart = CmdParams_getValue(cmdparams,'s');
     Tend = CmdParams_getValue(cmdparams,'e');
@@ -339,7 +340,7 @@ int main(int argc, char ** argv) {
     ofstream file(filename.c_str());
         
     // Specify file and height and width.
-    // FIXME: This is N+3 because of the spatial dimension starting at 1, not 0,
+    // This is N+3 because of the spatial dimension starting at 1, not 0,
     // and CellFieldArray is now starting at N+2, so this has to start at N+3... 
     SVGPrinter svg(file, cell_spacing*(N+3) + ((Tend-Tstart+1)-1)*grid_spacing,
                          (N+3)*cell_spacing);
@@ -351,63 +352,40 @@ int main(int argc, char ** argv) {
     // N+2 so our spatial dimensions begin accurately
     CellFieldArray slices(T,N+2,N+2,grid_spacing,Tstart,Tend);
 
-    // Have the particular tiling type mark iterations
-    // in each tile.
-    switch (tilingChoice) {
-        case pipelined_4x4x4:
-            #include "pipelined-4x4x4.is"
-            break;
-        case diamonds:
-            {
-            int kt, k1, k2, t, i, j;
-            int Li=1;
-            int Lj=1;
-            int Ui=N;
-            int Uj=N;
-            // Copied from ICS 2014 paper.
-            // Loop over tile wavefronts.
-            for (kt=ceild(3,tau)-3; kt<=floord(3*T,tau); kt++) {
-              // The next two loops iterate within a tile wavefront.
-              int k1_lb = ceild(3*Lj+2+(kt-2)*tau,tau*3);
-              int k1_ub = floord(3*Uj+(kt+2)*tau,tau*3);
-              //Loops over tile coordinates within a parallel tile wavefront.
-              for (k1 = k1_lb; k1 <= k1_ub; k1++) {
-                int k2_lb = floord((2*kt-2)*tau-3*Ui+2,tau*3)-k1;
-                int k2_ub = floord((2+2*kt)*tau-3*Li-2,tau*3)-k1;
-                for (k2 = k2_lb; k2 <= k2_ub; k2++) {
-                  // Loop over time within a tile.
-                  for (t = max(1, floord(kt*tau-1, 3)); 
-                       t < min(T+1, tau + floord(kt*tau, 3)); t++) {
-                    // Loops over the spatial dimensions within each tile.
-                    for (i = max(Li,max((kt-k1-k2)*tau-t, 2*t-(2+k1+k2)*tau+2));
-                         i <= min(Ui,min((1+kt-k1-k2)*tau-t-1, 
-                                         2*t-(k1+k2)*tau)); i++) {
-                      for (j = max(Lj,max(tau*k1-t, t-i-(1+k2)*tau+1));
-                           j <= min(Uj,min((1+k1)*tau-t-1, t-i-k2*tau)); j++) {
-                        calc_diamond(kt,k1,k2,t,i,j);
-                      }
-                    }
-                  }
-                }
+    // Parameterized 3D diamond tiles with nearest neighbor
+    // slopes.
+    int kt, k1, k2, t, i, j;
+    int Li=1;
+    int Lj=1;
+    int Ui=N;
+    int Uj=N;
+    // Copied from ICS 2014 paper.
+    // Loop over tile wavefronts.
+    for (kt=ceild(3,tau)-3; kt<=floord(3*T,tau); kt++) {
+      // The next two loops iterate within a tile wavefront.
+      int k1_lb = ceild(3*Lj+2+(kt-2)*tau,tau*3);
+      int k1_ub = floord(3*Uj+(kt+2)*tau,tau*3);
+      //Loops over tile coordinates within a parallel tile wavefront.
+      for (k1 = k1_lb; k1 <= k1_ub; k1++) {
+        int k2_lb = floord((2*kt-2)*tau-3*Ui+2,tau*3)-k1;
+        int k2_ub = floord((2+2*kt)*tau-3*Li-2,tau*3)-k1;
+        for (k2 = k2_lb; k2 <= k2_ub; k2++) {
+          // Loop over time within a tile.
+          for (t = max(1, floord(kt*tau-1, 3)); 
+               t < min(T+1, tau + floord(kt*tau, 3)); t++) {
+            // Loops over the spatial dimensions within each tile.
+            for (i = max(Li,max((kt-k1-k2)*tau-t, 2*t-(2+k1+k2)*tau+2));
+                 i <= min(Ui,min((1+kt-k1-k2)*tau-t-1, 
+                                 2*t-(k1+k2)*tau)); i++) {
+              for (j = max(Lj,max(tau*k1-t, t-i-(1+k2)*tau+1));
+                   j <= min(Uj,min((1+k1)*tau-t-1, t-i-k2*tau)); j++) {
+                calc_diamond(kt,k1,k2,t,i,j);
               }
             }
-            }
-            break;
-        case diamond_prizms_6x6:
-            #include "diamond-prizms-skew-6x6.is"
-            break;
-        case diamond_prizms_8x8:
-            #include "diamond-prizms-skew-8x8.is"
-            break;
-        case diamond_prizms_12x12:
-            #include "diamond-prizms-skew-12x12.is"
-            break;
-        case diamond_prizms_6x6_noping:
-            #include "diamond-prizms-skew-noping-6x6.is"
-            break;
-        default:
-            std::cerr << "ERROR: slice-viz: unknown tiling type" << std::endl;
-    }  
+          }
+        }
+      }
+    }
 
     // Print the array of iteration slices out to the file.
     slices.printToSVG(svg,Tstart,Tend);

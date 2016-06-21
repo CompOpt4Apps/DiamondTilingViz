@@ -4,6 +4,7 @@ README for slice-viz
 (C) Copyright 2016 University of Arizona
 (C) Copyright 2014,2015 Colorado State University
 Michelle Strout, started 1/3/14
+posting with Wendy Wang, June 2016
 
 slize-viz.cpp is a driver for generating an svg file that
 draws slices of the specified 3D tiling.  To build type "make".
